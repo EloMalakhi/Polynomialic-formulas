@@ -1,6 +1,6 @@
 from decimal import Decimal, getcontext
-from random import randint
-import random
+
+
 
 def c_cube_root(a: Decimal, b: Decimal):
     if a == 0 and b == 0:
@@ -94,6 +94,8 @@ def c_cube_root(a: Decimal, b: Decimal):
 
             leader = s_cube_root(a)
             series_real, series_imag = c_cube_root_series((b/a))
+            # print(leader**3*series_real**3 - 3*leader**3*series_real*series_imag**2)
+            # print(3*leader**3*series_real**2*series_imag - leader**3*series_imag**3)
             return leader*series_real, leader*series_imag
 
 def s_cube_root(a: Decimal):
@@ -150,9 +152,14 @@ def c_cube_root_series(power_expr: Decimal):
         imag = Decimal("0")
         cn = Decimal("1")
         power = Decimal("1")
-        for i in range(100):
+        iterator = True
+        i = -1
+        while iterator:
+            i += 1
             cn *= Decimal(1 - 3*i)/Decimal(3*(i+1))
             power *= power_expr
+            if abs(cn*power) < Decimal("1e-27"):
+                iterator = False
             if (i+1)%4 == 1:
                 imag += cn*power
             elif (i+1)%4 == 2:
@@ -185,6 +192,7 @@ def s_cube_root_series(power_expr: Decimal):
         return real
 
 def c_square_root(a: Decimal, b: Decimal):
+    
     if a == 0 and b == 0:
         return Decimal("0"), Decimal("0")
     elif a == 0:
@@ -199,11 +207,51 @@ def c_square_root(a: Decimal, b: Decimal):
             return Decimal("0"), s_square_root(-a)
     else:
         if abs(b/a) >= .8 and abs(b/a) <= 1.25:
+
+            
             # use 1.1, .46
-            leader_real = Decimal("1.1")
-            leader_imag = Decimal(".46")
-            series_real, series_imag = complex_conj_square_root_series(Decimal((.9984*a + 1.012*b)/2.02094656 - 1), Decimal((.9984*b - 1.012*a)/2.02094656))
-            return leader_real*series_real - leader_imag*series_imag, leader_imag*series_real + leader_real*series_imag
+
+            # √(1+i) * √((a + bi)/(1 + i))
+            # √(1+i) * √( (a + bi)(1 - i)/2)
+            # √(1+i) * √( (a + b)/2 + (b - a)i/2  )
+            # √((1+i)/2) * √(a + b + (b - a)i)
+            # √(a+bi) = √(a/2 + s/2) + (|b|/b)√(s/2 - a/2)i
+            # s = √(a^2 + b^2)
+            # √((1+i)/2) = √(.25 + √(.125)) + √(√(.125) - .25)i
+
+            # complementary square root = √(1/2 + i/2)
+            # main square root = √( a + b + (b - a)i)
+
+            # main square root = √(a+b)*power_series((b-a)i/(a+b))
+            # or
+            # main square root = √(bi-ai)*power_series((a+b)/(a-b))
+            if abs(a+b) > abs(b-a):
+
+                series_real, series_imag = c_square_root_series((b-a)/(a+b))
+                if (a+b) < 0:
+                    guess = s_square_root(Decimal((-a-b))) 
+                    m_s_r_real = - guess*series_imag
+                    m_s_r_imag = guess*series_real
+                else:
+                    guess = s_square_root(Decimal((a+b)))
+                    m_s_r_real = guess*series_real
+                    m_s_r_imag = guess*series_imag
+            else:
+                series_real, series_imag = c_square_root_series((a+b)/(a-b))
+                if (b-a)  < 0:
+                    guess_real, guess_imag =  s_square_root(Decimal(a/2-b/2)), -s_square_root(Decimal(a/2-b/2))
+                else:
+                    guess_real, guess_imag = s_square_root(Decimal(b/2-a/2)), s_square_root(Decimal(b/2-a/2))
+                m_s_r_real  = series_real*guess_real - series_imag*guess_imag
+                m_s_r_imag = guess_imag*series_real + guess_real*series_imag
+
+
+            comp1 = s_square_root(Decimal(".125"))
+            comp2 = s_square_root(comp1 + Decimal(.25))
+            comp3 = s_square_root(comp1 - Decimal(.25))
+            return m_s_r_real*comp2 - m_s_r_imag*comp3, m_s_r_imag*comp2 + m_s_r_real*comp3
+
+
         elif abs(b/a) > 1.25:
             if b > 0:
                 # √(a+Bi) = √(Bi) * series(-ai/B)
@@ -317,132 +365,7 @@ def s_square_root_series(power_expr: Decimal):
 
 
 
-def FourthPoly(A: Decimal, B: Decimal, C: Decimal, D: Decimal, E: Decimal, rec_real: Decimal, rec_imag: Decimal):
-    if A == 0:
-        print("A can't be zero\naborting")
-        print(1/0)
-    else:
-        # m1 = 72ce/aa - 27dd/aa - 27bbe/aaa + 9bcd/aaa - 2ccc/aaa
-        # m2 = 12e/a - 3bd/aa + cc/aa
-        # M1 = aaa*m1
-        # M2 = aa*m2
-        M1 = 72*A*C*E - 27*A*D**2 - 27*B**2*E + 9*B*C*D - 2*C**3
-        M2 = 12*A*E - 3*B*D + C**2
-        vholder = M1*M1 - 4*M2*M2*M2
-        vholder4 = Decimal("0")
-        vholder2, vholder3 = c_square_root(vholder, vholder4)
 
-        
-        if vholder < 0:
-            M6_real, M6_imag = Decimal("0"), vholder3/2
-        elif vholder >0:
-            M6_real, M6_imag = vholder2/2, Decimal("0")
-        else:
-            M6_real, M6_imag = Decimal("0"), Decimal("0")
-
-
-        vholder = M1/2 + M6_real
-        vholder2 = M6_imag
-
-        M4_real, M4_imag = c_cube_root(vholder, vholder2)
-
-        # if abs(M4_real*M4_real*M4_real - 3*M4_real*M4_imag*M4_imag - vholder) > abs(rec_real):
-        #     rec_real = abs(M4_real*M4_real*M4_real - 3*M4_real*M4_imag*M4_imag - vholder)
-        #     print(f"{A} {B} {C} {D} {E}")
-        # if abs(3*M4_real*M4_real*M4_imag - M4_imag*M4_imag*M4_imag - vholder2) > abs(rec_imag):
-        #     rec_imag = abs(3*M4_real*M4_real*M4_imag - M4_imag*M4_imag*M4_imag - vholder2)
-        #     print(f"{A} {B} {C} {D} {E}")
-
-        vholder = M1/2 - M6_real
-        vholder2 = -M6_imag
-        M5_real, M5_imag = c_cube_root(vholder, vholder2)
-
-        # if abs(M5_real*M5_real*M5_real - 3*M5_real*M5_imag*M5_imag - vholder) > abs(rec_real):
-        #     rec_real = abs(M5_real*M5_real*M5_real - 3*M5_real*M5_imag*M5_imag - vholder)
-        #     print(f"{A} {B} {C} {D} {E}")
-        # if abs(3*M5_real*M5_real*M5_imag - M5_imag*M5_imag*M5_imag - vholder2) > abs(rec_imag):
-        #     rec_imag = abs(3*M5_real*M5_real*M5_imag - M5_imag*M5_imag*M5_imag - vholder2)
-        #     print(f"{A} {B} {C} {D} {E}")
-
-        M3_real = (2*C + M4_real + M5_real)/(3*A)
-        M3_imag = (M4_imag + M5_imag)/(3*A)
-
-        vholder = -4*A*(2*C + M4_real + M5_real)/3 + B**2
-        vholder2 = -4*A*(M4_imag + M5_imag)/3
-        
-        S1_real, S1_imag = c_square_root(vholder, vholder2)
-
-        # if abs(S1_real*S1_real - S1_imag*S1_imag - vholder) > abs(rec_real):
-        #     rec_real = abs(S1_real*S1_real - S1_imag*S1_imag - vholder)
-        #     print(f"{A} {B} {C} {D} {E}")
-        # if abs(2*S1_real*S1_imag - vholder2) > abs(rec_imag):
-        #     rec_imag = abs(2*S1_real*S1_imag - vholder2)
-        #     print(f"{A} {B} {C} {D} {E}")
-
-        P1_real = Decimal((C - M4_real - M5_real)/(3))
-        P1_imag = Decimal((-M4_imag - M5_imag)/(3))
-
-
-        C1_real, C1_imag = 2*S1_real - 2*B, 2*S1_imag 
-
-        
-        C2_real, C2_imag = C1_real*P1_real - C1_imag*P1_imag + 4*A*D, C1_imag*P1_real + C1_real*P1_imag
-        C2_real, C2_imag = C2_real*-4*A, C2_imag*-4*A
-        if (S1_real + S1_imag) < .00000000000001:
-            print(S1_real)
-            print(S1_imag)
-            print(f"{A} {B} {C} {D} {E}")
-            print(1/0)
-        C3_real, C3_imag = (S1_real - B)*(S1_real - B) - S1_imag*S1_imag, 2*S1_imag*(S1_real - B)
-        #(-B + S1 + sqrt(C2/S1 + C3)/(4*A)
-
-        # C2*(S1_real - S1_imag)/(S1_real*S1_real + S1_imag*S1_imag)
-
-
-
-        return rec_real, rec_imag
-
-rec_real = Decimal("0")
-rec_imag = Decimal("0")
-rang = 0
-for i in range(rang):
-    a = Decimal(randint(-10, 10))
-    if a == 0:
-        a = Decimal("1")
-    b = Decimal(randint(-10, 10))
-    c = Decimal(randint(-10, 10))
-    d = Decimal(randint(-10, 10))
-    e = Decimal(randint(-10, 10))
-    if rang == 1:
-        a,b,c,d,e = Decimal(1), Decimal(0), Decimal(-1), Decimal(0), Decimal(9)
-    rec_real, rec_imag = FourthPoly(a, b, c, d, e, rec_real, rec_imag)
-    
-print(rec_real, rec_imag)
-
-import sympy
-# (-B + S1 + sqrt(-4*A*(4*A*D + P1*(-2*B + 2*S1))/S1 + (-B + S1)**2))/(4*A)
-# S1 = sqrt(-4*A**2*M3 + B**2)
-# P1 = -A*M3 + C
-# M3 = M4/3 + M5/3 + 2*C/(3*A)
-# M4 = (M1/2 + M6/2)**(1/3)
-# M5 = (M1/2 - M6/2)**(1/3)
-# M6 = sqrt(M1**2 - 4*M2**3)
-# M1 = 72*C*E/A**2 - 27*D**2/A**2 - 27*B**2*E/A**3 + 9*B*C*D/A**3 - 2*C**3/A**3
-# M2 = 12*E/A - 3*B*D/A**2 + C**2/A**2
-
-
-# (-B + S1 + sqrt(-4*A*(4*A*D + P1*(-2*B + 2*S1))/S1 + (-B + S1)**2))/(4*A)
-# S1 = A((s1 s2) - (s3 s4))
-
-
-
-# 4*A*D + P1*(-2*B)
-
-# 4*A*A*[ -ab(c d) -cd(a b) (ab cd)*(a b c d)/2         ]
-# 2*A*A*[ -cd(a b) cd(c d)         ]
-# 2*A*A*[ (ab - cd)]
-
-# S1 = A((s1 s2) - (s3 s4))
 
 
 
