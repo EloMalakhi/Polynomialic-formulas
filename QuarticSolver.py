@@ -1,18 +1,7 @@
 import RootCalculator
 
 from decimal import Decimal, getcontext
-from random import randint
 
-def random_coefficients():
-    a, b, c, d, e = randint(-10, 10), randint(-10, 10), randint(-10, 10), randint(-10, 10), randint(-10, 10)
-    A = Decimal(a)
-    if A == 0:
-        A = Decimal(1)
-    B = Decimal(b)
-    C = Decimal(c)
-    D = Decimal(d)
-    E = Decimal(e)
-    return A, B, C, D, E
 
 
 def P2_sw(switch_num):
@@ -29,7 +18,7 @@ def P3_sw(switch_num):
         print(f"No combination #{switch_num} defaulting to 1")
         return 1
     else:
-        if (switch_num - 1) % 4 < 3:
+        if (switch_num - 1) % 4 < 2:
             return 1
         else:
             return -1 
@@ -70,35 +59,59 @@ def calculate_solution(A, B, C, D, E, Debug=False, switch=1):
         print(M6_real**2 - M6_imag**2)
         input()
 
-    
-    M4_real, M4_imag = RootCalculator.c_cube_root(Decimal(M1/2 + M6_real/2), Decimal(M6_imag/2))
+    input_r, input_i = Decimal(M1/2 + M6_real/2), Decimal(M6_imag/2)
+    if abs(input_r) < 1e-26:
+        input_r = Decimal(0)
+    if abs(input_i) < 1e-26:
+        input_i = Decimal(0)
+    M4_real, M4_imag = RootCalculator.c_cube_root(input_r, input_i)
     if Debug:
-        print(Decimal(M1/2 + M6_real/2), Decimal(M6_imag/2))
+        print(input_r, input_i)
         print(M4_real**3 - 3*M4_real*M4_imag**2, 3*M4_real**2*M4_imag - M4_imag**3)
         input()
 
-    M5_real, M5_imag = RootCalculator.c_cube_root(Decimal(M1/2 - M6_real/2), Decimal(M6_imag/2))
+    input_r, input_i = Decimal(M1/2 - M6_real/2), Decimal(-M6_imag/2)
+    if abs(input_r) <= 1e-26:
+        input_r = Decimal(0)
+    if abs(input_i) <= 1e-26:
+        input_i = Decimal(0)
+
+    M5_real, M5_imag = RootCalculator.c_cube_root(input_r, input_i)
     if Debug:
-        print(Decimal(M1/2 - M6_real/2), Decimal(M6_imag/2))
+        print(input_r, input_i)
         print(M5_real**3 - 3*M5_real*M5_imag**2, 3*M5_real**2*M5_imag - M5_imag**3)
         input()
 
     M3_real, M3_imag = Decimal(2*C/(3*A) + Decimal(M4_real/3) + Decimal(M5_real/3)), Decimal(M4_imag/3 + M5_imag/3)
+    if abs(M3_imag) < 1e-20:
+        M3_imag = Decimal(0)
+    input_r, input_i = Decimal(B*B/(4*A*A) - M3_real), - M3_imag
 
-    P2_real, P2_imag = RootCalculator.c_square_root(Decimal(B*B/(4*A*A) - M3_real), - M3_imag)
-    P2_real, P2_imag = P2_sw(switch)*P2_real, P2_sw(switch)*P2_imag
+    if abs(input_r) < 1e-20:
+        input_r = Decimal(0)
+    if abs(input_i) < 1e-20:
+        input_i = Decimal(0)
+
+    P2_real, P2_imag = RootCalculator.c_square_root(input_r, input_i)
+
     if Debug:
-        print(Decimal(B*B/(4*A*A) - M3_real), - M3_imag)
+        print(input_r, input_i)
         print(P2_real*P2_real - P2_imag*P2_imag, 2*P2_real*P2_imag)
         input()
 
     P1_real, P1_imag = P2_real - Decimal(B/(2*A)), P2_imag
     P4_real, P4_imag = Decimal((C/A - M3_real)/2), Decimal(- M3_imag/2)
 
-    P5_real, P5_imag = RootCalculator.c_square_root(Decimal(P4_real*P4_real - P4_imag*P4_imag - E/A), Decimal(2*P4_real*P4_imag))
+
+    input_r, input_i = Decimal(P4_real*P4_real - P4_imag*P4_imag - E/A), Decimal(2*P4_real*P4_imag)
+    if abs(input_r) < 1e-20:
+        input_r = Decimal(0)
+    if abs(input_i) < 1e-20:
+        input_i = Decimal(0)
+    P5_real, P5_imag = RootCalculator.c_square_root(input_r, input_i)
     P5_real, P5_imag = P5_sw(switch)*P5_real, P5_sw(switch)*P5_imag
     if Debug:
-        print(Decimal(P4_real*P4_real - P4_imag*P4_imag - E/A), Decimal(2*P4_real*P4_imag))
+        print(input_r, input_i)
         print(P5_real**2 - P5_imag**2, 2*P5_imag*P5_real)
         input()
 
@@ -113,52 +126,81 @@ def calculate_solution(A, B, C, D, E, Debug=False, switch=1):
     return P6_real, P6_imag
 
 def func(a, b, c, d, e, x_real, x_imag):
-    
-    output_real = Decimal(a*x_real**4 - 6*a*x_real**2*x_imag**2 + a*x_imag**4 + b*x_real**3 - 3*b*x_real*x_imag**2 + c*x_real**2 - c*x_imag**2 + d*x_real + e)
-    output_imag = Decimal(4*a*x_real**3*x_imag - 4*a*x_real*x_imag**3 + 3*b*x_real**2*x_imag - b*x_imag**3 + 2*c*x_real*x_imag + d*x_imag)
+    output_real = Decimal(a*x_real**4 - 6*a*x_real**2*x_imag**2 + a*x_imag**4)
+    output_imag = Decimal(4*a*x_real**3*x_imag - 4*a*x_real*x_imag**3)
+
+
+    output_real += Decimal(b*x_real**3 - 3*b*x_real*x_imag**2)
+    output_imag += Decimal(3*b*x_real**2*x_imag - b*x_imag**3)
+
+
+    output_real += Decimal(c*x_real**2 - c*x_imag**2)
+    output_imag += Decimal(2*c*x_real*x_imag)
+
+
+    output_real += Decimal(d*x_real)
+    output_imag += Decimal(d*x_imag)
+
+
+    output_real += Decimal(e)
+
+
+
+
     return output_real, output_imag
 
 
-printSol = False
-for i in range(30000):
-    a,b,c,d,e = random_coefficients()
-    x_real, x_imag = calculate_solution(a,b,c,d,e)
-    test_real, test_imag = func(a,b,c,d,e,x_real,x_imag)
-    
-    if (abs(test_real) + abs(test_imag) >= 1e-23):
-        x_real, x_imag = calculate_solution(a,b,c,d,e, switch=2)
-        test_real, test_imag = func(a,b,c,d,e,x_real,x_imag)
-        if printSol:
-            print(f"a solution to {a}x^4 + {b}x^3 + {c}x^2 + {d}x + {e} is:")
-            print(f"{x_real} + {x_imag}i")
-            print(f"The result of putting this value through the function gives:")
-            print(test_real, test_imag)
-    else:
-        if printSol:
-            print(f"a solution to {a}x^4 + {b}x^3 + {c}x^2 + {d}x + {e} is:")
-            print(f"{x_real} + {x_imag}i")
-            print(f"The result of putting this value through the function gives:")
-            print(test_real, test_imag)
-        if (abs(test_real) + abs(test_imag)) >= 1e-23:
-            print("FAILED")
+def makeDecimal(a,b,c,d,e):
+    A = Decimal(a)
+    if A == 0:
+        A = Decimal(1)
+    B = Decimal(b)
+    C = Decimal(c)
+    D = Decimal(d)
+    E = Decimal(e)
+    return A, B, C, D, E
+
+Test = False
+if Test == True:
+    Fd = False
+    for i in range(3889620):
+        # stopped at 57697
+        p = i
+        e = p % 21 - 10
+        d = (p // 21) % 21 - 10
+        c = (p // 441) % 21 - 10
+        b = (p // 9261) % 21 - 10
+        a = (p // 194481) - 10
+        if (p // 194481) - 10 > -1:
+            a += 1
+        a,b,c,d,e = makeDecimal(a,b,c,d,e)
+
+
+        next_switch = True
+        switch_n = 0
+        while next_switch:
+            switch_n += 1
+            x_real, x_imag = calculate_solution(a,b,c,d,e,switch=switch_n)
+            test_real, test_imag = func(a,b,c,d,e,x_real,x_imag)
+            if (abs(test_real) + abs(test_imag) >= 1e-19) and switch_n < 8:
+                #print(f"f({x_real}, {x_imag}) = {test_real}, {test_imag}")
+                pass
+            elif (abs(test_real) + abs(test_imag) >= 1e-19) and switch_n == 8:
+                next_switch = False
+                print(f"f({x_real}, {x_imag}) = {test_real}, {test_imag}")
+                print(f"FAILED {a} {b} {c} {d} {e}")
+                Fd = True
+            else:
+                next_switch  = False
+                #print(f"SUCCESS {a} {b} {c} {d} {e}")
+                pass
+        if Fd:
+            print(i)
             break
 
-# 3888
-# a = 57
-# for i in range(a):
-#     if int(a/(i+2)) == a/(i+2):
-#         print(a/(i+2))
-#         print(i+2)
-#         break
+        if i % 40000 == 0:
+            print(i)
+        
 
-# -17010 3888√19
 
-# a^3 3a^2b√19 57ab^2 19b^3√19
 
-# 19b^3 + 3*a^2*b = 3888 = 16*243 = b(19bb + 3aa)
-# ll = []
-# for i in range(3888):
-#     if int(3888/(i+1)) == 3888/(i+1):
-#         ll.append(i+1)
-# for i in ll:
-#     print(f"factor {i}: {1296/i - 19*i*i/3}")
