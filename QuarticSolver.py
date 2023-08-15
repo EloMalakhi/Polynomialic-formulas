@@ -49,9 +49,9 @@ def calculate_solution(A, B, C, D, E, Debug=False, switch=1):
     #    7     neg    neg   pos
     #    8     neg    neg   neg
 
-    M1 = Decimal(72*C*E/A**2 - 27*D*D/A**2 - 27*B**2*E/A**3 + 9*B*C*D/A**3 - 2*C**3/A**3)
+    M1 = Decimal(72*A*C*E - 27*A*D*D - 27*B**2*E + 9*B*C*D - 2*C**3)
 
-    M2 = Decimal(12*E/A - 3*B*D/A**2 + C*C/A**2)
+    M2 = Decimal(12*A*E - 3*B*D + C*C)
 
     M6_real, M6_imag = RootCalculator.c_square_root(M1*M1 - 4*M2*M2*M2, Decimal("0"))
     if Debug:
@@ -82,10 +82,10 @@ def calculate_solution(A, B, C, D, E, Debug=False, switch=1):
         print(M5_real**3 - 3*M5_real*M5_imag**2, 3*M5_real**2*M5_imag - M5_imag**3)
         input()
 
-    M3_real, M3_imag = Decimal(2*C/(3*A) + Decimal(M4_real/3) + Decimal(M5_real/3)), Decimal(M4_imag/3 + M5_imag/3)
+    M3_real, M3_imag = Decimal(2*C/3 + Decimal(M4_real/3) + Decimal(M5_real/3)), Decimal(M4_imag/3 + M5_imag/3)
     if abs(M3_imag) < 1e-20:
         M3_imag = Decimal(0)
-    input_r, input_i = Decimal(B*B/(4*A*A) - M3_real), - M3_imag
+    input_r, input_i = Decimal(B*B - 4*A*M3_real), - 4*A*M3_imag
 
     if abs(input_r) < 1e-20:
         input_r = Decimal(0)
@@ -99,11 +99,11 @@ def calculate_solution(A, B, C, D, E, Debug=False, switch=1):
         print(P2_real*P2_real - P2_imag*P2_imag, 2*P2_real*P2_imag)
         input()
 
-    P1_real, P1_imag = P2_real - Decimal(B/(2*A)), P2_imag
-    P4_real, P4_imag = Decimal((C/A - M3_real)/2), Decimal(- M3_imag/2)
+    P1_real, P1_imag = P2_real - B, P2_imag
+    P4_real, P4_imag = Decimal(C - M3_real), Decimal(- M3_imag)
 
 
-    input_r, input_i = Decimal(P4_real*P4_real - P4_imag*P4_imag - E/A), Decimal(2*P4_real*P4_imag)
+    input_r, input_i = Decimal(P4_real*P4_real - P4_imag*P4_imag - 4*A*E), Decimal(2*P4_real*P4_imag)
     if abs(input_r) < 1e-20:
         input_r = Decimal(0)
     if abs(input_i) < 1e-20:
@@ -115,15 +115,15 @@ def calculate_solution(A, B, C, D, E, Debug=False, switch=1):
         print(P5_real**2 - P5_imag**2, 2*P5_imag*P5_real)
         input()
 
-    P3_real, P3_imag = RootCalculator.c_square_root(P1_real*P1_real - P1_imag*P1_imag - 4*P4_real - 4*P5_real, 2*P1_real*P1_imag - 4*P4_imag - 4*P5_imag)
+    P3_real, P3_imag = RootCalculator.c_square_root(P1_real*P1_real - P1_imag*P1_imag - 8*A*P4_real - 8*A*P5_real, 2*P1_real*P1_imag - 8*A*P4_imag - 8*A*P5_imag)
     P3_real, P3_imag = P3_sw(switch)*P3_real, P3_sw(switch)*P3_imag
     if Debug:
-        print(P1_real*P1_real - P1_imag*P1_imag - 4*P4_real - 4*P5_real, 2*P1_real*P1_imag - 4*P4_imag - 4*P5_imag)
+        print(P1_real*P1_real - P1_imag*P1_imag - 8*A*P4_real - 8*A*P5_real, 2*P1_real*P1_imag - 8*A*P4_imag - 8*A*P5_imag)
         print(P3_real**2 - P3_imag**2, 2*P3_real*P3_imag)
         input()
 
-    P6_real, P6_imag = Decimal((P1_real + P3_real)/2), Decimal((P1_imag + P3_imag)/2)
-    return P6_real, P6_imag
+    P6_real, P6_imag = P1_real + P3_real, P1_imag + P3_imag
+    return P6_real/(4*A), P6_imag/(4*A)
 
 def func(a, b, c, d, e, x_real, x_imag):
     output_real = Decimal(a*x_real**4 - 6*a*x_real**2*x_imag**2 + a*x_imag**4)
@@ -160,7 +160,7 @@ def makeDecimal(a,b,c,d,e):
     E = Decimal(e)
     return A, B, C, D, E
 
-Test = False
+Test = True
 if Test == True:
     Fd = False
     for i in range(3889620):

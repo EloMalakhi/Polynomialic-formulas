@@ -159,14 +159,15 @@ def makeDecimal(a,b,c,d,e):
     E = Decimal(e)
     return A, B, C, D, E
 
-log_file = open("log.txt", "a")
+log_file = open("log3.txt", "a")
+Neither_works = open("Neither_works.txt", "a")
 
 Test = True
 if Test == True:
     Fd = False
-    for i in range(40000):
+    for i in range(40000*5):
         # stopped at 57697
-        p = i
+        p = i + 40000*74 
         e = p % 21 - 10
         d = (p // 21) % 21 - 10
         c = (p // 441) % 21 - 10
@@ -184,16 +185,11 @@ if Test == True:
         if abs(x_first_opt_real) + abs(x_first_opt_imag) < 1e-20:
             pass
         elif abs(x_second_opt_real) + abs(x_second_opt_imag) < 1e-20:
-            log_file.write(f"{p}   ")
+            log_file.write(f"{p % 500} ")
         else:
-            print(f"Neither works on {p}")
+            Neither_works.write(f", {p}")
+    Neither_works.close()
     log_file.close()
-
-
-        
-
-
-
 
 
 
