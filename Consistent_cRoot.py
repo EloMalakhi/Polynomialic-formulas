@@ -42,9 +42,11 @@ def c_cube_root(a: Decimal, b: Decimal):
         return R, I
     elif a == 0:
         R, I = Decimal(0), -s_cube_root(b)
+        R, I = AZeroSM(R, I, b)
         return R, I
     elif b == 0:
-        R, I = s_cube_root(a), b
+        R, I = s_cube_root(a), Decimal(0)
+        R, I = BZeroSM(R, I, a)
         return R, I
     else:
         # cube_root(a + bi) =
@@ -315,111 +317,71 @@ def GRSM(R: Decimal, I: Decimal, a: Decimal, b: Decimal):
     # therefore I wrote  configured next to them to know that I finished that part of the test
 
     if a < 0 and b > 0:
-        if abs(a) > 1:
-            return R, I
-        elif abs(a) < 1:
-            return R, I
-        elif a == -1:
-            return R, I
+        return Continuity(R, I, 3)
     elif a < 0 and b < 0:
-        if abs(a) > 1:
-            return R, I
-        elif abs(a) < 1:
-            return R, I
-        elif a == -1:
-            return R, I
+        return Continuity(R, I, 2)
     elif a > 0 and b > 0:
-        if abs(a) > 1:
-            return R, I
-        elif abs(a) < 1:
-            return R, I
-        elif a == 1:
-            return R, I
+        return Continuity(R, I, 3)
     elif a > 0 and b < 0:
-        if abs(a) > 1:
-            return R, I
-        elif abs(a) < 1:
-            return R, I
-        elif a == 1:
-            return R, I
+        return Continuity(R, I, 1)
+    
 
 def MRSM(R: Decimal, I: Decimal, a: Decimal, b: Decimal):
     # There are 3 cube roots for a number, this is selecting which one to use so that
     # there are no spikes in a succession of cube roots.
     # MRSM = Middle Range State Machine
     if a < 0 and b > 0:
-        if abs(a) > 1:
-            return R, I
-        elif abs(a) < 1:
-            return R, I
-        elif a == -1:
-            return R, I
+        return Continuity(R, I, 2)
     elif a < 0 and b < 0:
-        if abs(a) > 1:
-            return R, I
-        elif abs(a) < 1:
-            return R, I
-        elif a == -1:
-            return R, I
+        return Continuity(R, I, 3)
     elif a > 0 and b > 0:
-        if abs(a) > 1:
-            return R, I
-        elif abs(a) < 1:
-            return R, I
-        elif a == 1:
-            return R, I
+        return Continuity(R, I, 1)
     elif a > 0 and b < 0:
-        if abs(a) > 1:
-            return R, I
-        elif abs(a) < 1:
-            return R, I
-        elif a == 1:
-            return R, I
-
+        return Continuity(R, I, 3)
+    
 def LRSM(R: Decimal, I: Decimal, a: Decimal, b: Decimal):
     # There are 3 cube roots for a number, this is selecting which one to use so that
     # there are no spikes in a succession of cube roots.
     # LRSM = Lower Range State Machine
     if a < 0 and b > 0:
-        if abs(a) > 1:
-            return R, I
-        elif abs(a) < 1:
-            return R, I
-        elif a == -1:
-            return R, I
+        return Continuity(R, I, 1)
     elif a < 0 and b < 0:
-        if abs(a) > 1:
-            return R, I
-        elif abs(a) < 1:
-            return R, I
-        elif a == -1:
-            return R, I
+        return Continuity(R, I, 1)
     elif a > 0 and b > 0:
-        if abs(a) > 1:
-            return R, I
-        elif abs(a) < 1:
-            return R, I
-        elif a == 1:
-            return R, I
+        return Continuity(R, I, 2)
     elif a > 0 and b < 0:
-        if abs(a) > 1:
-            return R, I
-        elif abs(a) < 1:
-            return R, I
-        elif a == 1:
-            return R, I
-
+        return Continuity(R, I, 2)
+    
 def BZeroSM(R: Decimal, I: Decimal, a: Decimal):
     if a > 1:
-        return R, I
+        return Continuity(R, I, 2)
     elif a == 1:
-        return R, I
+        return Continuity(R, I, 2)
     elif a < -1:
-        return R, I
+        return Continuity(R, I, 1)
     elif a == -1:
-        return R, I
+        return Continuity(R, I, 1)
     elif a < 0:
-        return R, I
+        return Continuity(R, I, 1)
+    elif a > 0:
+        return Continuity(R, I, 2)
+
+def AZeroSM(R: Decimal, I: Decimal, b: Decimal):
+    if b > 1:
+        return Continuity(R, I, 3)
+    elif b == 1:
+        return Continuity(R, I, 3)
+    elif b < -1:
+        return Continuity(R, I, 2)
+    elif b == -1:
+        return Continuity(R, I, 2)
+    elif b < 0:
+        return Continuity(R, I, 2)
+    elif b > 0:
+        return Continuity(R, I, 3)
+    
+
+
 
 def test_edge_cases():
     set_for_a = [[-1.02, -1.01, -1, -.99, -.98], [-.02, -.01, 0, .01, .02],[.98, .99, 1, 1.01, 1.02]]
@@ -427,12 +389,14 @@ def test_edge_cases():
     # this is the test for b == 0
     #   also includes the test for b == 0 and a == 0
 
+    Dct = {}
     for i in set_for_a:
         counter = -1
         Debug = False
         DebugText = ""
         for a in i:
             b = 0
+            Dct[(a, b)] = 1
             if counter == -1:
                 counter += 1
                 init_r, init_i = c_cube_root(Decimal(a), Decimal(b))
@@ -446,6 +410,7 @@ def test_edge_cases():
         if Debug:
             print(DebugText)
             input()
+            pass
 
 
 
@@ -465,6 +430,7 @@ def test_edge_cases():
                 Debug = False
                 DebugText = ""
                 for b in ii:
+                    Dct[(a, b)]    = 1
                     if DebugText == "":
                         init_r, init_i = c_cube_root(Decimal(a), Decimal(b))
                     else:
@@ -477,6 +443,7 @@ def test_edge_cases():
                 if Debug:
                     print(DebugText)
                     input()
+                    pass
 
     # This tests for inconsistent spikes around the range of abs(b/a) = .8
     for i in set_for_a:
@@ -489,11 +456,12 @@ def test_edge_cases():
                     inner_set.append((2*(ii % 2) - 1)*.8*a + (iii - 2)/100)
                 set_for_b.append(inner_set)
             
-
+            
             for ii in set_for_b:
                 Debug = False
                 DebugText = ""
                 for b in ii:
+                    Dct[(a, b)]    = 1
                     if DebugText == "":
                         init_r, init_i = c_cube_root(Decimal(a), Decimal(b))
                     else:
@@ -505,6 +473,7 @@ def test_edge_cases():
                 if Debug:
                     print(DebugText)
                     input()
+                    pass
 
     # This tests for inconsistent spikes around the range of abs(b/a) = 0
     for i in set_for_a:
@@ -522,6 +491,7 @@ def test_edge_cases():
                 Debug = False
                 DebugText = ""
                 for b in ii:
+                    Dct[(a, b)] = 1
                     if DebugText == "":
                         init_r, init_i = c_cube_root(Decimal(a), Decimal(b))
                     else:
@@ -533,8 +503,9 @@ def test_edge_cases():
                 if Debug:
                     print(DebugText)
                     input()
+                    pass
     
 
-test_edge_cases()
+
 
 
