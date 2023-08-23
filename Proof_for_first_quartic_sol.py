@@ -80,8 +80,5 @@ print(f"The different square roots are seldom going to match (2ad - bc/3 + bM4/3
 print(f"The formula works in theory if P2*P5 = (2ad - bc/3 + bM4/3 + bM5/3)")
 print(f"The formula works in practical application if the sign of P2*P5 correctly causes the result to be (2ad - bc/3 + bM4/3 + bM5/3)")
 
-
-
-
-
-
+# if add = bbe:
+#   2ad - bc/3 + bM4/3 + bM5/3 = 0
