@@ -1,4 +1,4 @@
-import Consistent_cRoot
+from Consistent_cRoot import *
 
 from decimal import Decimal, getcontext
 
@@ -53,7 +53,7 @@ def calculate_solution(A, B, C, D, E, Debug=False, switch=1):
 
     M2 = Decimal(12*A*E - 3*B*D + C*C)
 
-    M6_real, M6_imag = RootCalculator.c_square_root(M1*M1 - 4*M2*M2*M2, Decimal("0"))
+    M6_real, M6_imag = c_square_root(M1*M1 - 4*M2*M2*M2, Decimal("0"))
     if Debug:
         print(M1*M1 - 4*M2*M2*M2, Decimal("0"))
         print(M6_real**2 - M6_imag**2)
@@ -64,7 +64,7 @@ def calculate_solution(A, B, C, D, E, Debug=False, switch=1):
         input_r = Decimal(0)
     if abs(input_i) < 1e-26:
         input_i = Decimal(0)
-    M4_real, M4_imag = RootCalculator.c_cube_root(input_r, input_i)
+    M4_real, M4_imag = c_cube_root(input_r, input_i)
     if Debug:
         print(input_r, input_i)
         print(M4_real**3 - 3*M4_real*M4_imag**2, 3*M4_real**2*M4_imag - M4_imag**3)
@@ -76,7 +76,7 @@ def calculate_solution(A, B, C, D, E, Debug=False, switch=1):
     if abs(input_i) <= 1e-26:
         input_i = Decimal(0)
 
-    M5_real, M5_imag = RootCalculator.c_cube_root(input_r, input_i)
+    M5_real, M5_imag = c_cube_root(input_r, input_i)
     if Debug:
         print(input_r, input_i)
         print(M5_real**3 - 3*M5_real*M5_imag**2, 3*M5_real**2*M5_imag - M5_imag**3)
@@ -92,7 +92,7 @@ def calculate_solution(A, B, C, D, E, Debug=False, switch=1):
     if abs(input_i) < 1e-20:
         input_i = Decimal(0)
 
-    P2_real, P2_imag = RootCalculator.c_square_root(input_r, input_i)
+    P2_real, P2_imag = c_square_root(input_r, input_i)
 
     if Debug:
         print(input_r, input_i)
@@ -108,14 +108,14 @@ def calculate_solution(A, B, C, D, E, Debug=False, switch=1):
         input_r = Decimal(0)
     if abs(input_i) < 1e-20:
         input_i = Decimal(0)
-    P5_real, P5_imag = RootCalculator.c_square_root(input_r, input_i)
+    P5_real, P5_imag = c_square_root(input_r, input_i)
     P5_real, P5_imag = P5_sw(switch)*P5_real, P5_sw(switch)*P5_imag
     if Debug:
         print(input_r, input_i)
         print(P5_real**2 - P5_imag**2, 2*P5_imag*P5_real)
         input()
 
-    P3_real, P3_imag = RootCalculator.c_square_root(P1_real*P1_real - P1_imag*P1_imag - 8*A*P4_real - 8*A*P5_real, 2*P1_real*P1_imag - 8*A*P4_imag - 8*A*P5_imag)
+    P3_real, P3_imag = c_square_root(P1_real*P1_real - P1_imag*P1_imag - 8*A*P4_real - 8*A*P5_real, 2*P1_real*P1_imag - 8*A*P4_imag - 8*A*P5_imag)
     P3_real, P3_imag = P3_sw(switch)*P3_real, P3_sw(switch)*P3_imag
     if Debug:
         print(P1_real*P1_real - P1_imag*P1_imag - 8*A*P4_real - 8*A*P5_real, 2*P1_real*P1_imag - 8*A*P4_imag - 8*A*P5_imag)
