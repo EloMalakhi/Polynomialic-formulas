@@ -81,20 +81,15 @@ print(f"The formula works in theory if P2*P5 = (2ad - bc/3 + bM4/3 + bM5/3)")
 print(f"The formula works in practical application if the sign of P2*P5 correctly causes the result to be (2ad - bc/3 + bM4/3 + bM5/3)")
 
 
-# P5 could be set to (2ad - bc/3 + bM4/3 + bM5/3)/P2
-#       but P2 being 0 is yet unaccounted for
 
-# if add = bbe:
-#       P2*P5 = 0
+
+
+# if a*d*d = b*b*e:
+#    P5 = 0
 # if 8*a*a*d + b**3 - 4*a*b*c = 0:
 #       P2 = 0
+#       2ad - bc/3 + bM4/3 + bM5/3 = 0
+#       P5 = √(-bd - cbb/4a + cc - 4*a*e)/2a
 
-
-a, b, c, d, e = sympy.symbols("a b c d e")
-M1 = 72*a*c*e - 27*a*d*d - 27*b*b*e + 9*b*c*d - 2*c*c*c
-M2  = 12*a*e - 3*b*d + c*c
-
-p1 = 3*b**2/(4*a) - 8*a*c/(4*a)
-hold = sympy.expand(64*a**3*(p1**3 - M1 - 3*M2*p1)/27)
-
-
+# else:
+#     P5 = (2ad - bc/3 + bM4/3 + bM5/3)/P2
