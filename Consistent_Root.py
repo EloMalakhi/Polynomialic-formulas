@@ -139,7 +139,7 @@ def c_square_root(a: Decimal, b: Decimal):
             else:
                 series_real, series_imag = c_square_root_series(-a/b)
                 leader_real, leader_imag = s_square_root(Decimal(-b/2)), -s_square_root(Decimal(-b/2))
-                return leader_real*series_real - leader_imag*series_imag, leader_imag*series_real + leader_real*series_imag
+                return leader_imag*series_imag - leader_real*series_real, -leader_imag*series_real - leader_real*series_imag
         else:
             if a > 0:
                 # √(a+bi) = √(a) * series(b/a)
