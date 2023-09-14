@@ -84,12 +84,18 @@ print(f"The formula works in practical application if the sign of P2*P5 correctl
 
 
 
+
+
 # if a*d*d = b*b*e:
 #    P5 = 0
+
 # if 8*a*a*d + b**3 - 4*a*b*c = 0:
 #       P2 = 0
 #       2ad - bc/3 + bM4/3 + bM5/3 = 0
-#       P5 = √(-bd - cbb/4a + cc - 4*a*e)/2a
+#       P5 = √(16*a**2*c*c - 8*a*b**2*c + b**4 - 64*a**3*e)/4a
+#       P5 = √(16*a**2*c*c - 4*a*b*c*(2*b) + b**3*(2*b) - b**4 - 64*a**3*e)/4a
+#       P5 = √(16*a**2*c*c - 8*a**2*d*(2*b) - b**4 - 64*a**3*e)/4a
+#       P5 = √(16*a**2*c*c - 16*a**2*b*d - b**4 - 64*a**3*e)/4a
 
 # else:
 #     P5 = (2ad - bc/3 + bM4/3 + bM5/3)/P2
