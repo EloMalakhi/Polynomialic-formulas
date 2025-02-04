@@ -24,6 +24,8 @@ a, b, c, d, e = sympy.symbols('a b c d e')
 # M1 = 72ace - 27add - 27bbe + 9bcd - 2ccc
 # M2 = 12ae - 3bd + cc
 
+# M7
+
 
 # Testing
 

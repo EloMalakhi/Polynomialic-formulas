@@ -1,7 +1,12 @@
 import sympy
 import re
 
+# this is a generic algebraic equation writer.
+
+# This writes equations that may shed light on the formulas for different degree polynomials
+
 class main(object):
+
     def __init__(self, degree):
         self.degree = degree
         self.root = sympy.symbols("r")

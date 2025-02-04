@@ -1,5 +1,14 @@
 import sympy
 
+# 2 Vertices come as a result of b**2 - 3*a*c > 0
+# 1 Vertex comes as a result of b**2 = 3*a*c
+# else 0 Vertex
+
+# 3 solutions come as a result of d(-27aad + 18abc - 4bbb) + c**2(b**2 - 4ac) > 0
+# 2 solutions come as a result of d(-27aad + 18abc - 4bbb) + c**2(b**2 - 4ac) = 0 and d - b*c/(3*a) + 2*b**3/(27*a**2) ≠ 0
+# else 1 solution
+
+
 
 # Proofs
 
