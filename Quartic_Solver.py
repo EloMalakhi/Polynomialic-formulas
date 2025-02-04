@@ -30,9 +30,9 @@ def Proximity(a, b):
 def OneDigitAtATime(cx, cy, decimal_place):
     Dict = {}
     Relevance = []
-    for i in range(-10, 11):
+    for i in range(-5, 6):
         y_change = round(i/(10**decimal_place), decimal_place)
-        for j in range(-10, 11):
+        for j in range(-5, 6):
             x_change = round(j/(10**decimal_place), decimal_place)
             inst_x, inst_y = round(cx + x_change, decimal_place), round(cy + y_change, decimal_place)
             Dict[Proximity(inst_x, inst_y)] = (inst_x, inst_y) # ties values to their proximity
